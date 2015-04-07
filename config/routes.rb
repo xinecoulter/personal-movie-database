@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   devise_for :users, skip: [:sessions]
 
   authenticated :user do
-    root to: "dashboard#show", as: :authenticated_root
+    root to: "movies#index", as: :authenticated_root
   end
 
   as :user do
@@ -10,4 +10,6 @@ Rails.application.routes.draw do
     post '/' => 'devise/sessions#create', as: :user_session
     delete 'signout' => 'devise/sessions#destroy', as: :destroy_user_session
   end
+
+  resources :movies, except: :index
 end
