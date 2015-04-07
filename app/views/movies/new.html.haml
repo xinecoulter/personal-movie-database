@@ -1,0 +1,16 @@
+%h1 Search movie
+
+= form_for :movie, method: :get, url: new_movie_path do |f|
+  = f.text_field :search
+  = f.submit value: nil
+
+- if @search_results
+  %ol
+    - @search_results.each do |result|
+      %li
+        = result.title
+        = form_for :movie, method: :post, url: movies_path do |f|
+          =f.label :storage_identification, "Storage ID"
+          =f.text_field :storage_identification
+          =f.hidden_field :imdb_search_id, value: result.id
+          =f.submit
