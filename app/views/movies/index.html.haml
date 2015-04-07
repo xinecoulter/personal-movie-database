@@ -1,0 +1,8 @@
+= link_to "Log out", destroy_user_session_path, method: :delete
+= link_to "Add movie", new_movie_path
+
+- if @movies.present?
+  %ul
+    - @movies.each do |movie|
+      %li
+        = link_to movie.title, movie_path(movie)
