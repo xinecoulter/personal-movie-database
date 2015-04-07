@@ -9,6 +9,16 @@ class MoviesController < ApplicationController
     end
   end
 
+  def create
+    movie = Movie.make(current_user, movie_params)
+
+    if movie.valid?
+      redirect_to movie_path(movie)
+    else
+      render :new
+    end
+  end
+
 private
 
   def movie_params

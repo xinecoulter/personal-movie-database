@@ -9,4 +9,17 @@ class Movie < ActiveRecord::Base
 
   attr_accessor :search, :imdb_search_id
 
+  def self.make(user, params)
+    imdb_id = params[:imdb_search_id]
+    imdb_data = ImdbData.new(imdb_id)
+    movie = Movie.new(
+      storage_identification: params[:storage_identification],
+      imdb_id: imdb_id
+    )
+    transaction do
+      imdb_data.convert_to_movie(movie)
+      user.movies << movie
+    end
+    movie
+  end
 end
