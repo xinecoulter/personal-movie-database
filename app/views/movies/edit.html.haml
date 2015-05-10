@@ -1,0 +1,5 @@
+%h1= @movie.title
+= form_for @movie, method: :patch do |f|
+  =f.label :storage_identification, "Storage ID"
+  =f.text_field :storage_identification
+  =f.submit
