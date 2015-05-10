@@ -22,4 +22,10 @@ class Movie < ActiveRecord::Base
     end
     movie
   end
+
+  def self.find_and_update(id, params)
+    movie = find(id)
+    movie.update(params)
+    movie
+  end
 end
