@@ -1,11 +1,12 @@
+= link_to "Delete", movie_path(@movie), method: :delete
+%p= "Storage ID: #{@movie.storage_identification}"
+= link_to "Edit", edit_movie_path(@movie)
 %h1= "Title: #{@movie.title}"
 %p= "Company: #{@movie.company}"
 %p Genres:
 %ul
   - @movie.genres.each do |genre|
     %li= genre.name
-
-%p= "Storage ID: #{@movie.storage_identification}"
 
 %p= "Runtime: #{@movie.length} mins"
 
