@@ -12,7 +12,7 @@ class MoviesController < ApplicationController
   def create
     movie = Movie.make(current_user, movie_params)
 
-    if movie.valid?
+    if movie.persisted?
       redirect_to movie_path(movie)
     else
       render :new
@@ -28,13 +28,8 @@ class MoviesController < ApplicationController
   end
 
   def update
-    @movie = Movie.find(params[:id])
     movie = Movie.find_and_update(params[:id], movie_params)
-    if movie.valid?
-      redirect_to
-    else
-      render :edit
-    end
+    redirect_to movie_path(movie)
   end
 
   def destroy
