@@ -10,7 +10,7 @@
       %li
         = result.title
         = form_for :movie, method: :post, url: movies_path do |f|
-          =f.label :storage_identification, "Storage ID"
-          =f.text_field :storage_identification
+          =f.label :storage_identifier, "Storage ID"
+          =f.text_field :storage_identifier
           =f.hidden_field :imdb_search_id, value: result.id
           =f.submit

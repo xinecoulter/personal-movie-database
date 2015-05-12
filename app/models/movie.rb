@@ -13,7 +13,7 @@ class Movie < ActiveRecord::Base
     imdb_id = params[:imdb_search_id]
     imdb_data = ImdbData.new(imdb_id)
     movie = Movie.new(
-      storage_identification: params[:storage_identification],
+      storage_identifier: params[:storage_identifier],
       imdb_identifier: imdb_id
     )
     transaction do

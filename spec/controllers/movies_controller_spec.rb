@@ -71,7 +71,7 @@ describe MoviesController do
   end
 
   describe "POST 'create'" do
-    let(:params) { { imdb_search_id: 24601, storage_identification: 2 } }
+    let(:params) { { imdb_search_id: 24601, storage_identifier: 2 } }
     let(:imdb_movie) { double }
     let(:the_movie) { create(:movie) }
     before do
@@ -147,8 +147,8 @@ describe MoviesController do
   end
 
   describe "PATCH 'update'" do
-    let!(:movie) { create(:movie, storage_identification: 1, user: user) }
-    let(:params) { { storage_identification: 5 } }
+    let!(:movie) { create(:movie, storage_identifier: 1, user: user) }
+    let(:params) { { storage_identifier: 5 } }
     subject { patch :update, id: movie.id, movie: params }
 
     it "checks authorization" do
@@ -158,7 +158,7 @@ describe MoviesController do
 
     it "updates the movie in the database" do
       subject
-      assert(params[:storage_identification] == movie.reload.storage_identification)
+      assert(params[:storage_identifier] == movie.reload.storage_identifier)
     end
 
     it "raises an exception when the update is unsuccessful" do

@@ -49,7 +49,7 @@ class MoviesController < ApplicationController
 private
 
   def movie_params
-    params.require(:movie).permit(:search, :imdb_search_id, :storage_identification)
+    params.require(:movie).permit(:search, :imdb_search_id, :storage_identifier)
   end
 
 end

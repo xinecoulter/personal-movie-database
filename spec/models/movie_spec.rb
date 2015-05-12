@@ -72,15 +72,15 @@ describe Movie do
     assert(movie.reload.characters.include? "Chris Evans => Captain America")
   end
 
-  it "can have a storage_identification" do
-    movie = build(:movie, storage_identification: 44)
+  it "can have a storage_identifier" do
+    movie = build(:movie, storage_identifier: 44)
     movie.save
-    assert(44 == movie.reload.storage_identification)
+    assert(44 == movie.reload.storage_identifier)
   end
 
   describe ".make" do
     let(:user) { create(:user) }
-    let(:params) { {imdb_search_id: 9000, storage_identification: 40} }
+    let(:params) { {imdb_search_id: 9000, storage_identifier: 40} }
     let(:imdb_data) { double }
 
     before do
@@ -102,18 +102,18 @@ describe Movie do
     it "gives the movie the specified attributes" do
       movie = subject
       assert(9000 == movie.imdb_identifier)
-      assert(40 == movie.storage_identification)
+      assert(40 == movie.storage_identifier)
     end
   end
 
   describe ".find_and_update" do
-    let!(:movie) { create(:movie, storage_identification: 5) }
-    let(:params) { {storage_identification: 10} }
+    let!(:movie) { create(:movie, storage_identifier: 5) }
+    let(:params) { {storage_identifier: 10} }
     subject { Movie.find_and_update(movie.id, params) }
 
     it "finds and updates the task" do
       expect { subject }.to_not change(Movie, :count)
-      assert(subject.storage_identification == params[:storage_identification])
+      assert(subject.storage_identifier == params[:storage_identifier])
     end
   end
 end
