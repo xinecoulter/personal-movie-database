@@ -21,15 +21,27 @@ describe MoviesController do
   end
 
   describe "GET 'new'" do
-    context "when params[:movie] is present" do
-      let(:search) { "Shawshank Redemption" }
-      let(:results) { double }
-      before do
-        Imdb::Search.stub(:new).with(search) { results }
-        results.stub(:movies)
-      end
-      subject { get :new, movie: { search: search } }
+    let(:search) { "Shawshank Redemption" }
+    let(:results) { double }
+    before do
+      Imdb::Search.stub(:new).with(search) { results }
+      results.stub(:movies)
+    end
+    subject { get :new, movie: { search: search } }
 
+    it "renders the :new template" do
+      subject
+      expect(response).to render_template :new
+    end
+
+    it "checks authorization" do
+      new_movie = build(:movie)
+      Movie.stub(:new) { new_movie }
+      controller.should_receive(:authorize!).with(:create, new_movie)
+      subject
+    end
+
+    context "when params[:movie] is present" do
       it "invokes Imdb::Search.new" do
         Imdb::Search.should_receive(:new).with(search)
         subject
@@ -38,6 +50,13 @@ describe MoviesController do
       it "renders the :new template" do
         subject
         expect(response).to render_template :new
+      end
+
+      it "checks authorization" do
+        new_movie = build(:movie)
+        Movie.stub(:new) { new_movie }
+        controller.should_receive(:authorize!).with(:create, new_movie)
+        subject
       end
     end
 
@@ -48,22 +67,24 @@ describe MoviesController do
         Imdb::Search.should_not_receive(:new)
         subject
       end
-
-      it "renders the :new template" do
-        subject
-        expect(response).to render_template :new
-      end
     end
   end
 
   describe "POST 'create'" do
     let(:params) { { imdb_search_id: 24601, storage_identification: 2 } }
     let(:imdb_movie) { double }
+    let(:the_movie) { create(:movie) }
     before do
       ImdbData.stub(:new) { imdb_movie }
       imdb_movie.stub(:convert_to_movie)
     end
     subject { post :create, movie: params }
+
+    it "checks authorization" do
+      Movie.stub(:make) { the_movie }
+      controller.should_receive(:authorize!).with(:create, the_movie)
+      subject
+    end
 
     it "saves the new movie in the database" do
       expect { subject }.to change(Movie, :count).by(1)
@@ -86,12 +107,17 @@ describe MoviesController do
   end
 
   describe "GET 'show'" do
-    let(:movie) { create(:movie) }
+    let(:movie) { create(:movie, user: user) }
     subject { get :show, id: movie.id }
 
     it "assigns the requested movie to @movie" do
       subject
       assert(movie == assigns(:movie))
+    end
+
+    it "checks authorization" do
+      controller.should_receive(:authorize!).with(:read, movie)
+      subject
     end
 
     it "renders the :show template" do
@@ -101,12 +127,17 @@ describe MoviesController do
   end
 
   describe "GET 'edit'" do
-    let(:movie) { create(:movie) }
+    let(:movie) { create(:movie, user: user) }
     subject { get :edit, id: movie.id }
 
     it "assigns the requested movie to @movie" do
       subject
       assert(movie == assigns(:movie))
+    end
+
+    it "checks authorization" do
+      controller.should_receive(:authorize!).with(:update, movie)
+      subject
     end
 
     it "renders the :edit template" do
@@ -116,9 +147,14 @@ describe MoviesController do
   end
 
   describe "PATCH 'update'" do
-    let!(:movie) { create(:movie, storage_identification: 1) }
+    let!(:movie) { create(:movie, storage_identification: 1, user: user) }
     let(:params) { { storage_identification: 5 } }
     subject { patch :update, id: movie.id, movie: params }
+
+    it "checks authorization" do
+      controller.should_receive(:authorize!).with(:update, movie)
+      subject
+    end
 
     it "updates the movie in the database" do
       subject
@@ -137,8 +173,13 @@ describe MoviesController do
   end
 
   describe "DELETE 'destroy'" do
-    let!(:movie) { create(:movie) }
+    let!(:movie) { create(:movie, user: user) }
     subject { delete :destroy, id: movie.id }
+
+    it "checks authorization" do
+      controller.should_receive(:authorize!).with(:destroy, movie)
+      subject
+    end
 
     it "destroys the movie" do
       expect { subject }.to change(Movie, :count).by(-1)
