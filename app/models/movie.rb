@@ -14,7 +14,7 @@ class Movie < ActiveRecord::Base
     imdb_data = ImdbData.new(imdb_id)
     movie = Movie.new(
       storage_identification: params[:storage_identification],
-      imdb_id: imdb_id
+      imdb_identifier: imdb_id
     )
     transaction do
       imdb_data.convert_to_movie(movie)

@@ -10,10 +10,10 @@ describe Movie do
     assert(Movie == movie.class)
   end
 
-  it "can have an imdb_id" do
-    movie = build(:movie, imdb_id: 9000)
+  it "can have an imdb_identifier" do
+    movie = build(:movie, imdb_identifier: 9000)
     movie.save
-    assert(9000 == movie.reload.imdb_id)
+    assert(9000 == movie.reload.imdb_identifier)
   end
 
   it "can have a title" do
@@ -101,7 +101,7 @@ describe Movie do
 
     it "gives the movie the specified attributes" do
       movie = subject
-      assert(9000 == movie.imdb_id)
+      assert(9000 == movie.imdb_identifier)
       assert(40 == movie.storage_identification)
     end
   end
