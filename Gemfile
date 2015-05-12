@@ -42,6 +42,7 @@ gem 'spring',        group: :development
 gem 'devise'
 gem 'haml'
 gem 'imdb'
+gem 'cancancan'
 
 group :development, :test do
   gem 'rspec-rails'
