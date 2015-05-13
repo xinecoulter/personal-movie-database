@@ -73,9 +73,9 @@ describe Movie do
   end
 
   it "can have a storage_identifier" do
-    movie = build(:movie, storage_identifier: 44)
+    movie = build(:movie, storage_identifier: "Box 1 Slot 40")
     movie.save
-    assert(44 == movie.reload.storage_identifier)
+    assert("Box 1 Slot 40" == movie.reload.storage_identifier)
   end
 
   describe ".make" do

@@ -147,8 +147,8 @@ describe MoviesController do
   end
 
   describe "PATCH 'update'" do
-    let!(:movie) { create(:movie, storage_identifier: 1, user: user) }
-    let(:params) { { storage_identifier: 5 } }
+    let!(:movie) { create(:movie, storage_identifier: "1", user: user) }
+    let(:params) { { storage_identifier: "5" } }
     subject { patch :update, id: movie.id, movie: params }
 
     it "checks authorization" do
