@@ -7,6 +7,8 @@ class Movie < ActiveRecord::Base
   has_many :movie_actors
   has_many :actors, through: :movie_actors
 
+  validates_uniqueness_of :storage_identifier
+
   attr_accessor :search, :imdb_search_id
 
   def self.make(user, params)

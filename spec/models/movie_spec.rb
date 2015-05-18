@@ -78,6 +78,12 @@ describe Movie do
     assert("Box 1 Slot 40" == movie.reload.storage_identifier)
   end
 
+  it "must have a unique storage_identifier" do
+    create(:movie, storage_identifier: "Box 1 Slot 1")
+    movie = build(:movie, storage_identifier: "Box 1 Slot 1")
+    assert(movie.invalid?)
+  end
+
   describe ".make" do
     let(:user) { create(:user) }
     let(:params) { {imdb_search_id: 9000, storage_identifier: 40} }
