@@ -68,7 +68,7 @@ class ImdbData
       movie.year = year
       movie.writers = writers
       movie.characters = characters
-      movie.save!
+      movie.save
 
       save_directors(movie)
       save_actors(movie)
