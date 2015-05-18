@@ -90,15 +90,15 @@ describe MoviesController do
       expect { subject }.to change(Movie, :count).by(1)
     end
 
-    context "when the movie is persisted in the database" do
+    context "with valid attributes" do
       it "redirects to the movie show path" do
         subject
         assert_redirected_to movie_path(Movie.first)
       end
     end
 
-    context "when the movie is not persisted in the database" do
-      before { Movie.any_instance.stub(:persisted?) { false } }
+    context "with invalid attributes" do
+      let!(:movie){create(:movie, storage_identifier: 2)}
       it "re-renders the :new template" do
         subject
         expect(response).to render_template(:new)
@@ -156,19 +156,34 @@ describe MoviesController do
       subject
     end
 
-    it "updates the movie in the database" do
-      subject
-      assert(params[:storage_identifier] == movie.reload.storage_identifier)
+    context "with valid attributes" do
+      it "updates the movie in the database" do
+        subject
+        assert(params[:storage_identifier] == movie.reload.storage_identifier)
+      end
+
+      it "raises an exception when the update is unsuccessful" do
+        Movie.stub(:find_and_update).and_raise(Exception)
+        assert_raises(Exception) { subject }
+      end
+
+      it "redirects to the movie" do
+        subject
+        assert_redirected_to movie_path(movie)
+      end
     end
 
-    it "raises an exception when the update is unsuccessful" do
-      Movie.stub(:find_and_update).and_raise(Exception)
-      assert_raises(Exception) { subject }
-    end
+    context "with invalid attributes" do
+      let!(:other_movie){create(:movie, storage_identifier: "5")}
+      it "does not update the movie in the database" do
+        expect { subject }.to_not change(movie, :storage_identifier)
+        assert("5" != movie.reload.storage_identifier)
+      end
 
-    it "redirects to the movie" do
-      subject
-      assert_redirected_to movie_path(movie)
+      it "re-renders the :edit template" do
+        subject
+        expect(response).to render_template(:edit)
+      end
     end
   end
 

@@ -15,7 +15,7 @@ class MoviesController < ApplicationController
       Movie.make(current_user, movie_params)
     end
 
-    if movie.persisted?
+    if movie.valid?
       redirect_to movie_path(movie)
     else
       render :new
@@ -33,10 +33,15 @@ class MoviesController < ApplicationController
   end
 
   def update
-    movie = authorize_with_transaction!(:update) do
+    @movie = authorize_with_transaction!(:update) do
       Movie.find_and_update(params[:id], movie_params)
     end
-    redirect_to movie_path(movie)
+
+    if @movie.valid?
+      redirect_to movie_path(@movie)
+    else
+      render :edit
+    end
   end
 
   def destroy
