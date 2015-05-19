@@ -1,8 +1,22 @@
-= link_to "Log out", destroy_user_session_path, method: :delete
-= link_to "Add movie", new_movie_path
-
 - if @movies.present?
-  %ul
-    - @movies.each do |movie|
-      %li
-        = link_to movie.title, movie_path(movie)
+  .table-responsive
+    %table.table.table-striped
+      %thead
+        %tr
+          %th
+          %th
+          %th
+          %th Storage ID
+      %tbody
+        - @movies.each do |movie|
+          %tr
+            %th.poster-image
+              %img{src: movie.poster, alt: movie.title}
+            %th
+              = link_to movie.title, movie_path(movie)
+              %br
+              = "#{movie.year} (#{movie.length} mins)"
+            %th= movie.plot
+            %th= movie.storage_identifier
+- else
+  You don't have any movies yet.
