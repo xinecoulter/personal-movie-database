@@ -1,25 +1,52 @@
-= link_to "Delete", movie_path(@movie), method: :delete
-%p= "Storage ID: #{@movie.storage_identifier}"
-= link_to "Edit", edit_movie_path(@movie)
-%h1= "Title: #{@movie.title}"
-%p= "Company: #{@movie.company}"
-%p Genres:
-%ul
-  - @movie.genres.each do |genre|
-    %li= genre.name
-
-%p= "Runtime: #{@movie.length} mins"
-
-%p Cast:
-%ul
-  - @movie.characters.each do |character|
-    %li= character
-
-%p Directed by:
-%ul
-  - @movie.directors.each do |director|
-    %li= director.name
-
-%p= "Writers: #{@movie.writers.join(", ")}"
-
-%p= "Plot Summary: #{@movie.plot_summary}"
+.page-header
+  %h1= @movie.title
+.container-fluid
+  .row
+    .col-md-6.col-sm-6#individual-movie-poster
+      %img{src: @movie.poster, alt: @movie.title}
+    .col-md-6.col-sm-6
+      %h3= @movie.company
+      %h4= @movie.genres.pluck(:name).join(", ")
+      %h4= @movie.storage_identifier
+      %h4= "#{@movie.length} mins"
+      %br
+      .row
+        .col-md-2.col-sm-2
+          %h4
+            - if @movie.directors.count > 1
+              Directors
+            - else
+              Director
+        .col-md-10.col-sm-10
+          %h4= @movie.directors.pluck(:name).join(", ")
+      .row
+        .col-md-2.col-sm-2
+          %h4
+            - if @movie.writers.count > 1
+              Writers
+            - else
+              Writer
+        .col-md-10.col-sm-10
+          %h4= @movie.writers.join(", ")
+      %br
+      .row
+        .col-md-3.col-sm-3
+          = link_to "Edit", edit_movie_path(@movie), class: "btn btn-warning"
+        .col-md-9.col-sm-9
+          = link_to "Delete", movie_path(@movie), method: :delete, class: "btn btn-danger"
+  .row
+    .col-md-12.col-md-12
+      %h4= @movie.plot_summary
+  .row
+    .col-md-12.col-md-12
+      .table-responsive
+        %table.table.table-striped
+          %thead
+            %tr
+              %th
+              %th
+          %tbody
+            - @movie.characters.each do |character|
+              %tr
+                %th= character
+                %th
