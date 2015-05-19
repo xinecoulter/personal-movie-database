@@ -1,0 +1,7 @@
+.poster-image img {
+  max-width: 60px;
+}
+
+#individual-movie-poster img {
+  max-width: 50%;
+}
