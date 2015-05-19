@@ -13,3 +13,15 @@
  *= require_tree .
  *= require_self
  */
+
+body, html {
+  height: 100%;
+}
+
+body {
+  padding-top: 70px;
+}
+
+.theme-showcase {
+  height: inherit;
+}
