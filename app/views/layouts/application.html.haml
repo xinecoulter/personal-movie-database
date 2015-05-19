@@ -6,6 +6,8 @@
     = javascript_include_tag 'application', 'data-turbolinks-track' => true
     = csrf_meta_tags
   %body
-
-    = render partial: "layouts/banner_messages"
-    = yield
+    - if current_user
+      = render partial: "layouts/navigation"
+    .container.theme-showcase
+      = render partial: "layouts/banner_messages"
+      = yield
