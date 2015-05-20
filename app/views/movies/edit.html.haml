@@ -1,5 +1,15 @@
-%h1= @movie.title
-= form_for @movie, method: :patch do |f|
-  =f.label :storage_identifier, "Storage ID"
-  =f.text_field :storage_identifier
-  =f.submit
+.page-header
+  %h1= @movie.title
+.container-fluid
+  .row
+    .col-md-4.col-md-offset-4
+      %h2 Edit
+
+  = form_for @movie, method: :patch do |f|
+    .row
+      .form-group.col-md-4.col-md-offset-4
+        = f.label :storage_identifier, "Storage ID", for: "input-storage-identifier"
+        = f.text_field :storage_identifier, class: "form-control", id: "input-storage-identifier", autofocus: true
+    .row
+      .form-group.col-md-4.col-md-offset-4
+        = f.submit "Submit", class: "btn btn-success"
