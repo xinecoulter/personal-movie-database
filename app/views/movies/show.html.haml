@@ -6,28 +6,20 @@
       %img{src: @movie.poster, alt: @movie.title}
     .col-md-6.col-sm-6
       %h3= @movie.company
-      %h4= @movie.genres.pluck(:name).join(", ")
-      %h4= @movie.storage_identifier
+      %h4= @movie.display_genres
+      %h4= "Storage ID: #{@movie.storage_identifier}"
       %h4= "#{@movie.length} mins"
       %br
       .row
         .col-md-2.col-sm-2
-          %h4
-            - if @movie.directors.count > 1
-              Directors
-            - else
-              Director
+          %h4= "Director".pluralize(@movie.directors.count)
         .col-md-10.col-sm-10
-          %h4= @movie.directors.pluck(:name).join(", ")
+          %h4= @movie.display_directors
       .row
         .col-md-2.col-sm-2
-          %h4
-            - if @movie.writers.count > 1
-              Writers
-            - else
-              Writer
+          %h4= "Writer".pluralize(@movie.writers.count)
         .col-md-10.col-sm-10
-          %h4= @movie.writers.join(", ")
+          %h4= @movie.display_writers
       %br
       .row
         .col-md-3.col-sm-3
@@ -35,18 +27,14 @@
         .col-md-9.col-sm-9
           = link_to "Delete", movie_path(@movie), method: :delete, class: "btn btn-danger"
   .row
-    .col-md-12.col-md-12
+    .col-md-12.col-sm-12
       %h4= @movie.plot_summary
   .row
-    .col-md-12.col-md-12
+    .col-md-12.col-sm-12
       .table-responsive
         %table.table.table-striped
-          %thead
-            %tr
-              %th
-              %th
           %tbody
             - @movie.characters.each do |character|
               %tr
-                %th= character
-                %th
+                %td= character.split(" => ").first
+                %td= character.split(" => ").last
