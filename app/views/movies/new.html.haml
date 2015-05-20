@@ -1,16 +1,30 @@
-%h1 Search movie
+.page-header
+  %h1 Search IMDB for a Movie to Add
+.container-fluid
+  = form_for :movie, method: :get, url: new_movie_path do |f|
+    .row
+      .col-md-12
+        = f.text_field :search
+        = f.submit value: nil, class: "btn btn-primary"
 
-= form_for :movie, method: :get, url: new_movie_path do |f|
-  = f.text_field :search
-  = f.submit value: nil
-
-- if @search_results
-  %ol
-    - @search_results.each do |result|
-      %li
-        = result.title
-        = form_for :movie, method: :post, url: movies_path do |f|
-          =f.label :storage_identifier, "Storage ID"
-          =f.text_field :storage_identifier
-          =f.hidden_field :imdb_search_id, value: result.id
-          =f.submit
+  - if @search_results
+    %h3= "Results (#{@search_results.count})"
+    .row
+      .col-md-12.col-md-12
+        .table-responsive
+          %table.table.table-striped
+            %thead
+              %tr
+                %th Title
+                %th Storage ID
+                %th
+            %tbody
+              - @search_results.each do |result|
+                %tr
+                  = form_for :movie, method: :post, url: movies_path do |f|
+                    %td= result.title
+                    %td
+                      = f.text_field :storage_identifier
+                      = f.hidden_field :imdb_search_id, value: result.id
+                    %td
+                      = f.submit "Add Movie", class: "btn btn-success"
