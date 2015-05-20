@@ -43,6 +43,7 @@ gem 'devise'
 gem 'haml'
 gem 'imdb'
 gem 'cancancan'
+gem 'draper', '~> 1.3'
 
 group :development, :test do
   gem 'rspec-rails'
