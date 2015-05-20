@@ -10,7 +10,7 @@ class MovieDecorator < Draper::Decorator
   end
 
   def display_writers
-    writers.join(", ")
+    writers.join(", ") if writers.present?
   end
 
 end

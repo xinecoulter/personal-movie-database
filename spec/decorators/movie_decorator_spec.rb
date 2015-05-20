@@ -28,11 +28,19 @@ describe MovieDecorator do
   end
 
   describe "#display_writers" do
-    let(:movie) { build_stubbed(:movie, writers: ["Tweedle Dee", "Tweedle Dum"]).decorate }
     subject { movie.display_writers }
 
-    it "returns a comma-separated string of the movie's writers" do
-      assert("Tweedle Dee, Tweedle Dum" == subject)
+    context "when writers is present" do
+      let(:movie) { build_stubbed(:movie, writers: ["Tweedle Dee", "Tweedle Dum"]).decorate }
+      it "returns a comma-separated string of the movie's writers" do
+        assert("Tweedle Dee, Tweedle Dum" == subject)
+      end
+    end
+
+    context "when writers is not present" do
+      it "is nil" do
+        assert(subject.nil?)
+      end
     end
   end
 
