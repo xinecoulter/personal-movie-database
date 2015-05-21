@@ -16,8 +16,10 @@ class MoviesController < ApplicationController
     end
 
     if movie.valid?
+      flash[:notice] = "Awesomesauce! Movie successfully added."
       redirect_to movie_path(movie)
     else
+      flash[:error] = "Fail. Try again."
       render :new
     end
   end
@@ -38,8 +40,10 @@ class MoviesController < ApplicationController
     end
 
     if @movie.valid?
+      flash[:notice] = "Awesomesauce! Movie successfully updated."
       redirect_to movie_path(@movie)
     else
+      flash[:error] = "Fail. Try again."
       render :edit
     end
   end
@@ -48,6 +52,7 @@ class MoviesController < ApplicationController
     movie = Movie.find(params[:id])
     authorize! :destroy, movie
     movie.destroy!
+    flash[:notice] = "Cool beans. Movie successfully deleted."
     redirect_to authenticated_root_path
   end
 

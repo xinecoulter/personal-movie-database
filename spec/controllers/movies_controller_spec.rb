@@ -91,6 +91,11 @@ describe MoviesController do
     end
 
     context "with valid attributes" do
+      it "sets the flash" do
+        subject
+        assert("Awesomesauce! Movie successfully added." == flash[:notice])
+      end
+
       it "redirects to the movie show path" do
         subject
         assert_redirected_to movie_path(Movie.first)
@@ -99,6 +104,11 @@ describe MoviesController do
 
     context "with invalid attributes" do
       let!(:movie){create(:movie, storage_identifier: 2)}
+      it "sets the flash" do
+        subject
+        assert("Fail. Try again." == flash[:error])
+      end
+
       it "re-renders the :new template" do
         subject
         expect(response).to render_template(:new)
@@ -167,6 +177,11 @@ describe MoviesController do
         assert_raises(Exception) { subject }
       end
 
+      it "sets the flash" do
+        subject
+        assert("Awesomesauce! Movie successfully updated." == flash[:notice])
+      end
+
       it "redirects to the movie" do
         subject
         assert_redirected_to movie_path(movie)
@@ -178,6 +193,11 @@ describe MoviesController do
       it "does not update the movie in the database" do
         expect { subject }.to_not change(movie, :storage_identifier)
         assert("5" != movie.reload.storage_identifier)
+      end
+
+      it "sets the flash" do
+        subject
+        assert("Fail. Try again." == flash[:error])
       end
 
       it "re-renders the :edit template" do
@@ -198,6 +218,11 @@ describe MoviesController do
 
     it "destroys the movie" do
       expect { subject }.to change(Movie, :count).by(-1)
+    end
+
+    it "sets the flash" do
+      subject
+      assert("Cool beans. Movie successfully deleted." == flash[:notice])
     end
 
     it "redirects to the authenticated_root_path" do
