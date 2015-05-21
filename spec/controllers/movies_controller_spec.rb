@@ -102,7 +102,7 @@ describe MoviesController do
     end
 
     context "with invalid attributes" do
-      let!(:movie){create(:movie, storage_identifier: 2)}
+      let!(:movie){create(:movie, user_id: user.id, storage_identifier: 2)}
       let(:the_movie) { build(:movie, user_id: user.id, storage_identifier: 2) }
       it "sets the flash" do
         subject
@@ -189,7 +189,7 @@ describe MoviesController do
     end
 
     context "with invalid attributes" do
-      let!(:other_movie){create(:movie, storage_identifier: "5")}
+      let!(:other_movie){create(:movie, user: user, storage_identifier: "5")}
       it "does not update the movie in the database" do
         expect { subject }.to_not change(movie, :storage_identifier)
         assert("5" != movie.reload.storage_identifier)

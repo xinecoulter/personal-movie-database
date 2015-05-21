@@ -78,10 +78,12 @@ describe Movie do
     assert("Box 1 Slot 40" == movie.reload.storage_identifier)
   end
 
-  it "must have a unique storage_identifier" do
-    create(:movie, storage_identifier: "Box 1 Slot 1")
-    movie = build(:movie, storage_identifier: "Box 1 Slot 1")
+  it "must have a unique storage_identifier within the user scope" do
+    create(:movie, user_id: 1, storage_identifier: "Box 1 Slot 1")
+    movie = build(:movie, user_id: 1, storage_identifier: "Box 1 Slot 1")
+    other_movie = build(:movie, user_id: 2, storage_identifier: "Box 1 Slot 1")
     assert(movie.invalid?)
+    assert(other_movie.valid?)
   end
 
   describe ".make" do

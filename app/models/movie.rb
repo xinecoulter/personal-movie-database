@@ -7,7 +7,7 @@ class Movie < ActiveRecord::Base
   has_many :movie_actors
   has_many :actors, through: :movie_actors
 
-  validates_uniqueness_of :storage_identifier
+  validates_uniqueness_of :storage_identifier, scope: :user_id
 
   attr_accessor :search, :imdb_search_id
 
