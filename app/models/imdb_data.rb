@@ -1,6 +1,9 @@
 class ImdbData
-  def initialize(imdb_id)
-    @data = Imdb::Movie.new(imdb_id)
+  def initialize(user_id, imdb_id, storage_id)
+    @user_id = user_id
+    @imdb_id = imdb_id
+    @storage_id = storage_id
+    @data = Imdb::Movie.new(@imdb_id)
   end
 
   def title
@@ -39,41 +42,36 @@ class ImdbData
     @data.cast_members_characters
   end
 
-  def save_directors(movie)
+  def assign_directors(movie)
+    return if movie.invalid?
     @data.director.each do |director|
       movie.directors << Director.find_or_create_by!(name: director)
     end
   end
 
-  def save_actors(movie)
+  def assign_actors(movie)
+    return if movie.invalid?
     @data.cast_members.each do |actor|
       movie.actors << Actor.find_or_create_by!(name: actor)
     end
   end
 
-  def save_genres(movie)
+  def assign_genres(movie)
+    return if movie.invalid?
     @data.genres.each do |genre|
       movie.genres << Genre.find_or_create_by!(name: genre)
     end
   end
 
-  def convert_to_movie(movie)
-    ActiveRecord::Base.transaction do
-      movie.title = title
-      movie.company = company
-      movie.length = length
-      movie.plot = plot
-      movie.plot_summary = plot_summary
-      movie.poster = poster
-      movie.year = year
-      movie.writers = writers
-      movie.characters = characters
-      movie.save
+  def convert_to_movie
+    movie = Movie.create(user_id: @user_id, imdb_identifier: @imdb_id, storage_identifier: @storage_id, title: title, company: company,
+            length: length, plot: plot, plot_summary: plot_summary, poster: poster, year: year, writers: writers,
+            characters: characters)
 
-      save_directors(movie)
-      save_actors(movie)
-      save_genres(movie)
-    end
+    assign_directors(movie)
+    assign_actors(movie)
+    assign_genres(movie)
+
     movie
   end
 end

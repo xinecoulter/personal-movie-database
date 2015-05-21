@@ -1,12 +1,14 @@
 require "rails_helper"
 
 describe ImdbData do
+  let(:user) { build_stubbed(:user) }
+  let(:storage_id) { "Box 2 Slot 22" }
   let(:imdb_id) { 12345 }
   let(:imdb_movie) { double }
   before { Imdb::Movie.stub(:new) { imdb_movie } }
 
   describe ".new" do
-    subject { ImdbData.new(imdb_id) }
+    subject { ImdbData.new(user.id, imdb_id, storage_id) }
 
     it "invokes Imdb::Movie.new" do
       Imdb::Movie.should_receive(:new).with(imdb_id)
@@ -15,7 +17,7 @@ describe ImdbData do
   end
 
   describe "#title" do
-    subject { ImdbData.new(imdb_id).title }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).title }
 
     it "invokes Imdb::Movie#title" do
       imdb_movie.should_receive(:title)
@@ -24,7 +26,7 @@ describe ImdbData do
   end
 
   describe "#company" do
-    subject { ImdbData.new(imdb_id).company }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).company }
 
     it "invokes Imdb::Movie#company" do
       imdb_movie.should_receive(:company)
@@ -33,7 +35,7 @@ describe ImdbData do
   end
 
   describe "#length" do
-    subject { ImdbData.new(imdb_id).length }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).length }
 
     it "invokes Imdb::Movie#length" do
       imdb_movie.should_receive(:length)
@@ -42,7 +44,7 @@ describe ImdbData do
   end
 
   describe "#plot" do
-    subject { ImdbData.new(imdb_id).plot }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).plot }
 
     it "invokes Imdb::Movie#plot" do
       imdb_movie.should_receive(:plot)
@@ -51,7 +53,7 @@ describe ImdbData do
   end
 
   describe "#plot_summary" do
-    subject { ImdbData.new(imdb_id).plot_summary }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).plot_summary }
 
     it "invokes Imdb::Movie#plot_summary" do
       imdb_movie.should_receive(:plot_summary)
@@ -60,7 +62,7 @@ describe ImdbData do
   end
 
   describe "#poster" do
-    subject { ImdbData.new(imdb_id).poster }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).poster }
 
     it "invokes Imdb::Movie#poster" do
       imdb_movie.should_receive(:poster)
@@ -69,7 +71,7 @@ describe ImdbData do
   end
 
   describe "#year" do
-    subject { ImdbData.new(imdb_id).year }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).year }
 
     it "invokes Imdb::Movie#year" do
       imdb_movie.should_receive(:year)
@@ -78,7 +80,7 @@ describe ImdbData do
   end
 
   describe "#writers" do
-    subject { ImdbData.new(imdb_id).writers }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).writers }
 
     it "invokes Imdb::Movie#writers" do
       imdb_movie.should_receive(:writers)
@@ -87,7 +89,7 @@ describe ImdbData do
   end
 
   describe "#characters" do
-    subject { ImdbData.new(imdb_id).characters }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).characters }
 
     it "invokes Imdb::Movie#cast_members_characters" do
       imdb_movie.should_receive(:cast_members_characters)
@@ -95,29 +97,43 @@ describe ImdbData do
     end
   end
 
-  describe "#save_directors" do
+  describe "#assign_directors" do
     let(:movie) { create(:movie) }
     let(:director_name) { "Francis Ford Coppola" }
     before { imdb_movie.stub(:director) { [director_name] } }
-    subject { ImdbData.new(imdb_id).save_directors(movie) }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).assign_directors(movie) }
 
-    it "invokes Imdb::Movie#director" do
-      imdb_movie.should_receive(:director)
-      subject
-    end
+    context "when the movie is valid" do
+      it "invokes Imdb::Movie#director" do
+        imdb_movie.should_receive(:director)
+        subject
+      end
 
-    it "makes the relationship between the movie and the director" do
-      expect { subject }.to change(movie.directors, :count).by(1)
-    end
+      it "makes the relationship between the movie and the director" do
+        expect { subject }.to change(movie.directors, :count).by(1)
+      end
 
-    context "when an instance of Director with the same name does not already exist" do
-      it "makes a director" do
-        expect { subject }.to change(Director, :count).by(1)
+      context "when an instance of Director with the same name does not already exist" do
+        it "makes a director" do
+          expect { subject }.to change(Director, :count).by(1)
+        end
+      end
+
+      context "when an instance of Director with the same name already exists" do
+        let!(:director) { create(:director, name: director_name) }
+
+        it "does not make a director" do
+          expect { subject }.to_not change(Director, :count)
+        end
       end
     end
 
-    context "when an instance of Director with the same name already exists" do
-      let!(:director) { create(:director, name: director_name) }
+    context "when the movie is not valid" do
+      before { movie.stub(:valid?) { false } }
+      it "does not invoke Imdb::Movie#director" do
+        imdb_movie.should_not_receive(:director)
+        subject
+      end
 
       it "does not make a director" do
         expect { subject }.to_not change(Director, :count)
@@ -125,29 +141,43 @@ describe ImdbData do
     end
   end
 
-  describe "#save_actors" do
+  describe "#assign_actors" do
     let(:movie) { create(:movie) }
     let(:actor_name) { "Al Pacino" }
     before { imdb_movie.stub(:cast_members) { [actor_name] } }
-    subject { ImdbData.new(imdb_id).save_actors(movie) }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).assign_actors(movie) }
 
-    it "invokes Imdb::Movie#cast_members" do
-      imdb_movie.should_receive(:cast_members)
-      subject
-    end
+    context "when the movie is valid" do
+      it "invokes Imdb::Movie#cast_members" do
+        imdb_movie.should_receive(:cast_members)
+        subject
+      end
 
-    it "makes the relationship between the movie and the actor" do
-      expect { subject }.to change(movie.actors, :count).by(1)
-    end
+      it "makes the relationship between the movie and the actor" do
+        expect { subject }.to change(movie.actors, :count).by(1)
+      end
 
-    context "when an instance of Actor with the same name does not already exist" do
-      it "makes an actor" do
-        expect { subject }.to change(Actor, :count).by(1)
+      context "when an instance of Actor with the same name does not already exist" do
+        it "makes an actor" do
+          expect { subject }.to change(Actor, :count).by(1)
+        end
+      end
+
+      context "when an instance of Actor with the same name already exists" do
+        let!(:actor) { create(:actor, name: actor_name) }
+
+        it "does not make a actor" do
+          expect { subject }.to_not change(Actor, :count)
+        end
       end
     end
 
-    context "when an instance of Actor with the same name already exists" do
-      let!(:actor) { create(:actor, name: actor_name) }
+    context "when the movie is not valid" do
+      before { movie.stub(:valid?) { false } }
+      it "does not invoke Imdb::Movie#cast_members" do
+        imdb_movie.should_not_receive(:cast_members)
+        subject
+      end
 
       it "does not make a actor" do
         expect { subject }.to_not change(Actor, :count)
@@ -155,29 +185,43 @@ describe ImdbData do
     end
   end
 
-  describe "#save_genres" do
+  describe "#asign_genres" do
     let(:movie) { create(:movie) }
     let(:genre_name) { "Drama" }
     before { imdb_movie.stub(:genres) { [genre_name] } }
-    subject { ImdbData.new(imdb_id).save_genres(movie) }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).assign_genres(movie) }
 
-    it "invokes Imdb::Movie#genres" do
-      imdb_movie.should_receive(:genres)
-      subject
-    end
+    context "when the movie is valid" do
+      it "invokes Imdb::Movie#genres" do
+        imdb_movie.should_receive(:genres)
+        subject
+      end
 
-    it "makes the relationship between the movie and the genre" do
-      expect { subject }.to change(movie.genres, :count).by(1)
-    end
+      it "makes the relationship between the movie and the genre" do
+        expect { subject }.to change(movie.genres, :count).by(1)
+      end
 
-    context "when an instance of Genre with the same name does not already exist" do
-      it "makes a genre" do
-        expect { subject }.to change(Genre, :count).by(1)
+      context "when an instance of Genre with the same name does not already exist" do
+        it "makes a genre" do
+          expect { subject }.to change(Genre, :count).by(1)
+        end
+      end
+
+      context "when an instance of Genre with the same name already exists" do
+        let!(:genre) { create(:genre, name: genre_name) }
+
+        it "does not make a genre" do
+          expect { subject }.to_not change(Genre, :count)
+        end
       end
     end
 
-    context "when an instance of Genre with the same name already exists" do
-      let!(:genre) { create(:genre, name: genre_name) }
+    context "when the movie is not valid" do
+      before { movie.stub(:valid?) { false } }
+      it "does not invoke Imdb::Movie#genres" do
+        imdb_movie.should_not_receive(:genres)
+        subject
+      end
 
       it "does not make a genre" do
         expect { subject }.to_not change(Genre, :count)
@@ -213,9 +257,20 @@ describe ImdbData do
       imdb_movie.stub(:cast_members) { [actor_name] }
       imdb_movie.stub(:genres) { [genre_name] }
     end
-    subject { ImdbData.new(imdb_id).convert_to_movie(movie) }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).convert_to_movie }
 
-    it "gives the movie its attributes" do
+    it "makes a new movie" do
+      expect { subject }.to change(Movie, :count).by(1)
+    end
+
+    it "gives the movie the specified attributes" do
+      movie = subject
+      assert(user.id == movie.user_id)
+      assert(imdb_id == movie.imdb_identifier)
+      assert(storage_id == movie.storage_identifier)
+    end
+
+    it "gives the movie its IMDB attributes" do
       movie = subject
       assert(title == movie.title)
       assert(company == movie.company)
