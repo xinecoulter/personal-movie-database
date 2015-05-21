@@ -73,15 +73,14 @@ describe MoviesController do
   describe "POST 'create'" do
     let(:params) { { imdb_search_id: 24601, storage_identifier: 2 } }
     let(:imdb_movie) { double }
-    let(:the_movie) { create(:movie) }
+    let(:the_movie) { create(:movie, user_id: user.id, storage_identifier: 2) }
     before do
       ImdbData.stub(:new) { imdb_movie }
-      imdb_movie.stub(:convert_to_movie)
+      imdb_movie.stub(:convert_to_movie) { the_movie }
     end
     subject { post :create, movie: params }
 
     it "checks authorization" do
-      Movie.stub(:make) { the_movie }
       controller.should_receive(:authorize!).with(:create, the_movie)
       subject
     end
@@ -104,6 +103,7 @@ describe MoviesController do
 
     context "with invalid attributes" do
       let!(:movie){create(:movie, storage_identifier: 2)}
+      let(:the_movie) { build(:movie, user_id: user.id, storage_identifier: 2) }
       it "sets the flash" do
         subject
         assert("Fail. Try again." == flash[:error])

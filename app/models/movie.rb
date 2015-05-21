@@ -13,16 +13,8 @@ class Movie < ActiveRecord::Base
 
   def self.make(user, params)
     imdb_id = params[:imdb_search_id]
-    imdb_data = ImdbData.new(imdb_id)
-    movie = Movie.new(
-      storage_identifier: params[:storage_identifier],
-      imdb_identifier: imdb_id
-    )
-    transaction do
-      imdb_data.convert_to_movie(movie)
-      user.movies << movie
-    end
-    movie
+    imdb_data = ImdbData.new(user.id, imdb_id, params[:storage_identifier])
+    imdb_data.convert_to_movie
   end
 
   def self.find_and_update(id, params)

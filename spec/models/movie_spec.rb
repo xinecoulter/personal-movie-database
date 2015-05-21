@@ -97,18 +97,8 @@ describe Movie do
     subject { Movie.make(user, params) }
 
     it "invokes ImdbData.new" do
-      ImdbData.should_receive(:new).with(9000)
+      ImdbData.should_receive(:new).with(user.id, 9000, 40)
       subject
-    end
-
-    it "makes a new movie" do
-      expect { subject }.to change(Movie, :count).by(1)
-    end
-
-    it "gives the movie the specified attributes" do
-      movie = subject
-      assert(9000 == movie.imdb_identifier)
-      assert(40 == movie.storage_identifier)
     end
   end
 
