@@ -88,15 +88,6 @@ describe ImdbData do
     end
   end
 
-  describe "#characters" do
-    subject { ImdbData.new(user.id, imdb_id, storage_id).characters }
-
-    it "invokes Imdb::Movie#cast_members_characters" do
-      imdb_movie.should_receive(:cast_members_characters)
-      subject
-    end
-  end
-
   describe "#assign_directors" do
     let(:movie) { create(:movie) }
     let(:director_name) { "Francis Ford Coppola" }
@@ -141,20 +132,21 @@ describe ImdbData do
     end
   end
 
-  describe "#assign_actors" do
+  describe "#assign_actors_and_roles" do
     let(:movie) { create(:movie) }
     let(:actor_name) { "Al Pacino" }
-    before { imdb_movie.stub(:cast_members) { [actor_name] } }
-    subject { ImdbData.new(user.id, imdb_id, storage_id).assign_actors(movie) }
+    let(:cast_member_character) { "#{actor_name} => Michael Corleone" }
+    before { imdb_movie.stub(:cast_members_characters) { [cast_member_character] } }
+    subject { ImdbData.new(user.id, imdb_id, storage_id).assign_actors_and_roles(movie) }
 
     context "when the movie is valid" do
       it "invokes Imdb::Movie#cast_members" do
-        imdb_movie.should_receive(:cast_members)
+        imdb_movie.should_receive(:cast_members_characters)
         subject
       end
 
-      it "makes the relationship between the movie and the actor" do
-        expect { subject }.to change(movie.actors, :count).by(1)
+      it "makes the role" do
+        expect { subject }.to change(Role, :count).by(1)
       end
 
       context "when an instance of Actor with the same name does not already exist" do
@@ -280,7 +272,6 @@ describe ImdbData do
       assert(poster == movie.poster)
       assert(year == movie.year)
       assert([writer_name] == movie.writers)
-      assert([character] == movie.characters)
     end
 
     it "gives the movie a director or directors" do

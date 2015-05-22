@@ -38,10 +38,6 @@ class ImdbData
     @data.writers
   end
 
-  def characters
-    @data.cast_members_characters
-  end
-
   def assign_directors(movie)
     return if movie.invalid?
     @data.director.each do |director|
@@ -49,10 +45,12 @@ class ImdbData
     end
   end
 
-  def assign_actors(movie)
+  def assign_actors_and_roles(movie)
     return if movie.invalid?
-    @data.cast_members.each do |actor|
-      movie.actors << Actor.find_or_create_by!(name: actor)
+    @data.cast_members_characters.each do |cast_member_character|
+      actor_role_array = cast_member_character.split(" => ")
+      actor = Actor.find_or_create_by!(name: actor_role_array.first)
+      Role.create(actor_id: actor.id, movie_id: movie.id, character_name: actor_role_array.last)
     end
   end
 
@@ -64,12 +62,12 @@ class ImdbData
   end
 
   def convert_to_movie
-    movie = Movie.create(user_id: @user_id, imdb_identifier: @imdb_id, storage_identifier: @storage_id, title: title, company: company,
-            length: length, plot: plot, plot_summary: plot_summary, poster: poster, year: year, writers: writers,
-            characters: characters)
+    movie = Movie.create(user_id: @user_id, imdb_identifier: @imdb_id, storage_identifier: @storage_id,
+            title: title, company: company, length: length, plot: plot, plot_summary: plot_summary,
+            poster: poster, year: year, writers: writers)
 
     assign_directors(movie)
-    assign_actors(movie)
+    assign_actors_and_roles(movie)
     assign_genres(movie)
 
     movie
