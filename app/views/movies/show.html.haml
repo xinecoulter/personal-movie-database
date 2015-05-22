@@ -34,7 +34,7 @@
       .table-responsive
         %table.table.table-striped
           %tbody
-            - @movie.characters.each do |character|
+            - @movie.actors.each do |actor|
               %tr
-                %td= character.split(" => ").first
-                %td= character.split(" => ").last
+                %td= actor.name
+                %td= actor.role_in(@movie).character_name
