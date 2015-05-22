@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :movie_actor do
+  factory :role do
     association :movie
     association :actor
   end

@@ -4,8 +4,8 @@ class Movie < ActiveRecord::Base
   has_many :directors, through: :movie_directors
   has_many :movie_genres
   has_many :genres, through: :movie_genres
-  has_many :movie_actors
-  has_many :actors, through: :movie_actors
+  has_many :roles
+  has_many :actors, through: :roles
 
   validates_uniqueness_of :storage_identifier, scope: :user_id
 
