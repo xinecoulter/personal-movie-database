@@ -65,13 +65,6 @@ describe Movie do
     assert(movie.reload.writers.include? "Amy Poehler")
   end
 
-  it "can have characters" do
-    movie = build(:movie, characters: ["Chris Hemsworth => Thor", "Chris Evans => Captain America"])
-    movie.save
-    assert(movie.reload.characters.include? "Chris Hemsworth => Thor")
-    assert(movie.reload.characters.include? "Chris Evans => Captain America")
-  end
-
   it "can have a storage_identifier" do
     movie = build(:movie, storage_identifier: "Box 1 Slot 40")
     movie.save
