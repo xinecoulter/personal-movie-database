@@ -4,8 +4,8 @@ class MoviesController < ApplicationController
   end
 
   def new
-    if params[:movie]
-      @search_results = Imdb::Search.new(movie_params[:search]).movies
+    if params[:search]
+      @search_results = Imdb::Search.new(params[:search]).movies
     end
     authorize! :create, Movie.new(user: current_user)
   end
@@ -59,7 +59,7 @@ class MoviesController < ApplicationController
 private
 
   def movie_params
-    params.require(:movie).permit(:search, :imdb_search_id, :storage_identifier)
+    params.require(:movie).permit(:imdb_search_id, :storage_identifier)
   end
 
 end

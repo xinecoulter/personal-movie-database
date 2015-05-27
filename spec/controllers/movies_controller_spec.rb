@@ -27,7 +27,7 @@ describe MoviesController do
       Imdb::Search.stub(:new).with(search) { results }
       results.stub(:movies)
     end
-    subject { get :new, movie: { search: search } }
+    subject { get :new, search: search }
 
     it "renders the :new template" do
       subject
@@ -41,7 +41,7 @@ describe MoviesController do
       subject
     end
 
-    context "when params[:movie] is present" do
+    context "when params[:search] is present" do
       it "invokes Imdb::Search.new" do
         Imdb::Search.should_receive(:new).with(search)
         subject
@@ -60,7 +60,7 @@ describe MoviesController do
       end
     end
 
-    context "when params[:movie] is not present" do
+    context "when params[:search] is not present" do
       subject { get :new }
 
       it "does not invoke Imdb::Search.new" do

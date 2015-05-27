@@ -1,11 +1,11 @@
 .page-header
   %h1 Search IMDB for a Movie to Add
 .container-fluid
-  = form_for :movie, method: :get, url: new_movie_path do |f|
+  = form_tag new_movie_path, method: :get do
     .row
       .col-md-12
-        = f.text_field :search
-        = f.submit value: nil, class: "btn btn-primary"
+        = text_field_tag :search, params[:search]
+        = submit_tag "Search", name: nil, class: "btn btn-primary"
 
   - if @search_results
     %h3= "Results (#{@search_results.count})"

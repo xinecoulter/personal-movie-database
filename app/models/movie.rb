@@ -9,7 +9,7 @@ class Movie < ActiveRecord::Base
 
   validates_uniqueness_of :storage_identifier, scope: :user_id
 
-  attr_accessor :search, :imdb_search_id
+  attr_accessor :imdb_search_id
 
   def self.make(user, params)
     imdb_id = params[:imdb_search_id]
